@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/current/mule-stdio.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    
+    
+    
+    <spring:bean id="activeMqConnFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    	<spring:property name="brokerURL" value="tcp://127.0.0.1:61616"/>
+    	<spring:property name="userName" value="HIP"/>
+    	<spring:property name="password" value="123456"/>
+    </spring:bean>
+    
+    <!-- 创建队列工厂 -->
+    <jms:activemq-connector name="jmsConnector" specification="1.1" brokerURL="vm://localhost" connectionFactory-ref="activeMqConnFactory"/>
+	
+	<!-- 获取控制台对象 -->
+	<stdio:connector name="stdioConnector" promptMessage="Please enter message：" doc:name="STDIO" />
+	
+	<!-- 将控制台输入的数据发送至队列中 -->
+	<model name="jmsServer">
+		<service name="jmsServrsService">
+			<inbound>
+				<stdio:inbound-endpoint doc:name="STDIO" system="IN"/>
+			</inbound>
+			<outbound>
+				<pass-through-router>
+					<jms:outbound-endpoint  connector-ref="jmsConnector" queue="mule.queue.test"/>
+				</pass-through-router>
+			</outbound>
+		</service>
+	</model>
+	
+	<!--  -->
+	<model name="jmsClients">
+		<service name="jmsClientServices">
+			<inbound>
+				<jms:inbound-endpoint connector-ref="jmsConnector" queue="mule.queue.test">
+					<jms:jmsmessage-to-object-transformer />
+				</jms:inbound-endpoint>
+			</inbound>
+			<outbound>
+				<pass-through-router>
+					<stdio:outbound-endpoint doc:name="STDIO2" system="OUT"/>
+				</pass-through-router>
+			</outbound>
+		</service>
+	</model>
+
+
+
+</mule>
