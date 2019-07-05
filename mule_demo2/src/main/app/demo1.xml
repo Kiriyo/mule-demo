@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/current/mule-stdio.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
-http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-    
-    
-    
-    <spring:bean id="activeMqConnFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    	<spring:property name="brokerURL" value="tcp://127.0.0.1:61616"/>
-    	<spring:property name="userName" value="HIP"/>
-    	<spring:property name="password" value="123456"/>
+<mule xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd 
+		http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/current/mule-stdio.xsd 
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	<!-- 需要注意引入：http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd  -->
+	<!-- 自动引入可能会出错 -->
+	<context:property-placeholder location="activemq.properties"/>
+	
+	<spring:bean id="activeMqConnFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    	<spring:property name="brokerURL" value="${activemq.brokerURL}"/>
+    	<spring:property name="userName" value="${activemq.userName}"/>
+    	<spring:property name="password" value="${activemq.password}"/>
     </spring:bean>
     
+      
     <!-- 创建队列工厂 -->
     <jms:activemq-connector name="jmsConnector" specification="1.1" brokerURL="vm://localhost" connectionFactory-ref="activeMqConnFactory"/>
 	
@@ -33,7 +44,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 		</service>
 	</model>
 	
-	<!--  -->
+	<!-- 将队列中的数据打印到控制台 -->
 	<model name="jmsClients">
 		<service name="jmsClientServices">
 			<inbound>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="hello-mule">
+    <global-element name="Java" type="http://www.mulesoft.org/schema/mule/core/custom-transformer" entity-id="Java#1">
+        <properties>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="name" value="HttpDataToUserTransformer"/>
+            <property name="encoding"/>
+            <property name="class" value="com.mule.transformer.HttpDataToUserTransformer"/>
+            <property name="auxiliary;index" value="1"/>
+            <property name="mimeType"/>
+        </properties>
+    </global-element>
+    <global-element name="Java" type="http://www.mulesoft.org/schema/mule/core/custom-transformer" entity-id="Java#2">
+        <properties>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="name" value="StringToHtmlTransformer"/>
+            <property name="encoding"/>
+            <property name="class" value="com.mule.transformer.StringToHtmlTransformer"/>
+            <property name="auxiliary;index" value="2"/>
+            <property name="mimeType"/>
+        </properties>
+    </global-element>
+    <global-element name="Message Properties" type="http://www.mulesoft.org/schema/mule/core/message-properties-transformer" entity-id="Message Properties#1">
+        <properties>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="scope"/>
+            <property name="name" value="setHtmlContenType"/>
+            <property name="overwrite" value="true"/>
+            <property name="encoding"/>
+            <property name="auxiliary;index" value="3"/>
+            <property name="mimeType"/>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/core/add-message-property;0">
+                <property name="value" value="text/html"/>
+                <property name="key" value="Content-Type"/>
+                <property name="auxiliary;index" value="4"/>
+                <property name="auxiliary;wrapIn" value="4"/>
+            </property-collection>
+            <property-collection name="@http://www.mulesoft.org/schema/mule/core/delete-message-property;0">
+                <property name="key" value="content-type"/>
+                <property name="auxiliary;index" value="5"/>
+                <property name="auxiliary;wrapIn" value="5"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="hello" entity-id="0dff95c1-912c-4b40-8c7e-2fabc3d6fe98">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="auxiliary;index" value="6"/>
+            <property name="tracking:enable-default-events"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="SayHello" type="http://www.mulesoft.org/schema/mule/core/endpoint" entity-id="Generic#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="exchange-pattern" value="request-response"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address" value="http://localhost:9090/hello-mule"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="7"/>
+                    <property name="responseTimeout"/>
+                    <property name="mimeType"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern name="HttpDataToUserTransformer" type="org.mule.tooling.ui.modules.core.pattern.globalXformRef" entity-id="Transformer Reference#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="ref" value="HttpDataToUserTransformer"/>
+                    <property name="auxiliary;index" value="8"/>
+                </properties>
+            </pattern>
+            <response index="9" entity-id="response#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+                        <pattern name="StringToHemlTransformer" type="org.mule.tooling.ui.modules.core.pattern.globalXformRef" entity-id="Transformer Reference#2">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="ref" value="StringToHtmlTransformer"/>
+<property name="auxiliary;index" value="10"/>
+                            </properties>
+                        </pattern>
+                        <pattern name="setHtmlContenType" type="org.mule.tooling.ui.modules.core.pattern.globalXformRef" entity-id="Transformer Reference#3">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="ref" value="setHtmlContenType"/>
+<property name="auxiliary;index" value="11"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </response>
+            <pattern name="HelloService" type="http://www.mulesoft.org/schema/mule/core/component" entity-id="Java#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="class" value="com.mule.transformer.service.HelloService"/>
+                    <property name="auxiliary;index" value="12"/>
+                </properties>
+            </pattern>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+    <description></description>
+</mule-configuration>

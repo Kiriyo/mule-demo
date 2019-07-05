@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="demo3">
+    <global-unknown description="false" unknownName="helloModel" index="1" entity-id="global-unknown#1">
+        <content>&lt;model xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; name=&quot;helloModel&quot;&gt;
+		&lt;service name=&quot;helloModelService&quot;&gt;
+			&lt;inbound&gt;
+				&lt;http:inbound-endpoint xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; address=&quot;http://localhost:8888/helloModel&quot;/&gt;
+			&lt;/inbound&gt;
+			&lt;component class=&quot;com.mule.demo.webservice.impl.HelloServiceImpl&quot;/&gt;
+		&lt;/service&gt;
+	&lt;/model&gt;</content>
+    </global-unknown>
+    <description></description>
+</mule-configuration>

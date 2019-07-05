@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
+	xmlns:ws="http://www.mulesoft.org/schema/mule/ws"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+<!-- 将客户端传过来的Http数据转化未conditions对象 --> 
+<custom-transformer name="StoreTransformer" class="com.mule.store.transformer.StoreTransformer" doc:name="Java"></custom-transformer>
+
+
+<!-- <ws:consumer-config name="Web_Service_Consumer" service="helloWorld" port="TestRegistryServiceImplPort" serviceAddress="http://localhost:8087/services/user" wsdlLocation="http://localhost:8087/services/user?wsdl" doc:name="Web Service Consumer"/>
+ -->
+<!-- 将service操作结果用Html语言封装起来 -->
+<!-- <custom-transformer name="StringToHtmlTransformer" class="com.mule.transformer.StringToHtmlTransformer" doc:name="Java"></custom-transformer>
+ -->
+<!-- 设置相应内容为text/html格式 --> 
+<!-- <message-properties-transformer name="setHtmlContenType" overwrite="true" doc:name="Message Properties">
+	<add-message-property key="Content-Type" value="text/html"></add-message-property>
+	<delete-message-property key="content-type"></delete-message-property>
+</message-properties-transformer> -->
+
+<!-- 根据客户端传过来的内容,返回相应的Hello语句 -->
+<flow name="store" doc:name="store">
+	<http:inbound-endpoint address="http://localhost:9090/store" exchange-pattern="request-response" doc:name="Store"></http:inbound-endpoint>
+	<transformer ref="StoreTransformer" doc:name="StoreTransformer"/>
+	<component class="com.mule.store.service.StoreService" doc:name="StoreService"/>
+	
+	<!-- <http:outbound-endpoint responseTimeout="100000" doc:name="HTTP endpoint"/> -->
+	<!-- <http:outbound-endpoint address="computerB" responseTimeout="100000" doc:name="HTTP endpoint"/> -->
+</flow>
+
+
+
+</mule>

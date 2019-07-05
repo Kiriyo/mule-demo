@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="webservice">
+    <global-unknown description="false" unknownName="Web_Service_Consumer" index="1" entity-id="global-unknown#1">
+        <content>&lt;ws:consumer-config xmlns:ws=&quot;http://www.mulesoft.org/schema/mule/ws&quot; name=&quot;Web_Service_Consumer&quot; service=&quot;helloWorld&quot; port=&quot;TestRegistryServiceImplPort&quot; serviceAddress=&quot;http://localhost:8090/mavenProject/HelloWorld&quot; wsdlLocation=&quot;http://localhost:8090/mavenProject/HelloWorld?wsdl&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;Web Service Consumer&quot;/&gt;</content>
+    </global-unknown>
+    <global-unknown description="false" unknownName="MySQL_Configuration" index="2" entity-id="global-unknown#2">
+        <content>&lt;db:mysql-config xmlns:db=&quot;http://www.mulesoft.org/schema/mule/db&quot; name=&quot;MySQL_Configuration&quot; host=&quot;127.0.0.1&quot; port=&quot;3306&quot; user=&quot;root&quot; password=&quot;admin&quot; database=&quot;test&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;MySQL Configuration&quot;/&gt;</content>
+    </global-unknown>
+    <global-unknown description="false" unknownName="HTTP_Listener_Configuration" index="3" entity-id="global-unknown#3">
+        <content>&lt;http:listener-config xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; name=&quot;HTTP_Listener_Configuration&quot; host=&quot;0.0.0.0&quot; port=&quot;8081&quot; basePath=&quot;/study&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;HTTP Listener Configuration&quot;/&gt;</content>
+    </global-unknown>
+    <flow SubFlow="false" name="webserviceFlow" entity-id="96353fdb-7740-440f-b414-5be0cf2c68c4">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="4"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <unknown description="false" index="5" entity-id="unknown#1">
+                <content>&lt;http:listener xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; config-ref=&quot;HTTP_Listener_Configuration&quot; path=&quot;/ws&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;HTTP&quot;/&gt;</content>
+            </unknown>
+            <unknown description="false" index="6" entity-id="unknown#2">
+                <content>&lt;ws:consumer xmlns:ws=&quot;http://www.mulesoft.org/schema/mule/ws&quot; config-ref=&quot;Web_Service_Consumer&quot; operation=&quot;getUserList&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;Web Service Consumer&quot;/&gt;</content>
+            </unknown>
+            <unknown description="false" index="7" entity-id="unknown#3">
+                <content>&lt;json:xml-to-json-transformer xmlns:json=&quot;http://www.mulesoft.org/schema/mule/json&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;XML to JSON&quot;/&gt;</content>
+            </unknown>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+    <flow SubFlow="false" name="webservicedelFlow" entity-id="227f18c1-2cc5-4997-b9ee-a5268e28cc54">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="8"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+            <unknown description="false" index="9" entity-id="unknown#4">
+                <content>&lt;http:listener xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; config-ref=&quot;HTTP_Listener_Configuration&quot; path=&quot;/ws2&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;HTTP&quot;/&gt;</content>
+            </unknown>
+            <pattern name="Java" type="org.mule.tooling.ui.modules.core.pattern.customTransformer" entity-id="Java#1">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="class" value="com.studydemo.transformer.TransformerParam"/>
+                    <property name="auxiliary;index" value="10"/>
+                </properties>
+            </pattern>
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+                <properties>
+                    <property name="message" value="#[payload]"/>
+                    <property name="level" value="INFO"/>
+                    <property name="category"/>
+                    <property name="auxiliary;index" value="11"/>
+                </properties>
+            </pattern>
+            <unknown description="false" index="12" entity-id="unknown#5">
+                <content>&lt;ws:consumer xmlns:ws=&quot;http://www.mulesoft.org/schema/mule/ws&quot; config-ref=&quot;Web_Service_Consumer&quot; operation=&quot;delUser&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;Web Service Consumer&quot;/&gt;</content>
+            </unknown>
+            <unknown description="false" index="13" entity-id="unknown#6">
+                <content>&lt;json:xml-to-json-transformer xmlns:json=&quot;http://www.mulesoft.org/schema/mule/json&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;XML to JSON&quot;/&gt;</content>
+            </unknown>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+</mule-configuration>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="email-mule">
+    <global-element name="STDIO" type="http://www.mulesoft.org/schema/mule/stdio/connector" entity-id="STDIO#1">
+        <properties>
+            <property name="promptMessageCode"/>
+            <property name="outputMessage"/>
+            <property name="dynamicNotification"/>
+            <property name="resourceBundle"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="name" value="SystemSteamConnecter"/>
+            <property name="validateConnections"/>
+            <property name="messageDelayTime" value="1000"/>
+            <property name="promptMessage" value="Please enter email content(content,address)!"/>
+            <property name="outputMessageCode"/>
+            <property name="auxiliary;index" value="1"/>
+        </properties>
+    </global-element>
+    <global-unknown description="false" unknownName="emailConnector" index="2" entity-id="global-unknown#1">
+        <content>&lt;custom-connector xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; name=&quot;emailConnector&quot; class=&quot;com.mule.email.SmtpConnector&quot;/&gt;</content>
+    </global-unknown>
+    <global-element name="Java" type="http://www.mulesoft.org/schema/mule/core/custom-transformer" entity-id="Java#1">
+        <properties>
+            <property name="returnClass"/>
+            <property name="name" value="contentToEmailTransformer"/>
+            <property name="mimeType"/>
+            <property name="encoding"/>
+            <property name="class" value="com.mule.transformer.ContentToEmailTransformer"/>
+            <property name="ignoreBadInput"/>
+            <property name="auxiliary;index" value="3"/>
+        </properties>
+    </global-element>
+    <global-element name="Java" type="http://www.mulesoft.org/schema/mule/core/custom-transformer" entity-id="Java#2">
+        <properties>
+            <property name="returnClass"/>
+            <property name="name" value="StringToMimeMessage"/>
+            <property name="mimeType"/>
+            <property name="encoding"/>
+            <property name="class" value="org.mule.transport.email.transformers.StringToEmailMessage"/>
+            <property name="ignoreBadInput"/>
+            <property name="auxiliary;index" value="4"/>
+        </properties>
+    </global-element>
+    <global-unknown description="false" index="5" entity-id="global-unknown#2">
+        <content>&lt;model xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot;&gt;
+	&lt;service name=&quot;emailContentUMO&quot;&gt;
+		&lt;inbound&gt;
+			&lt;stdio:inbound-endpoint xmlns:stdio=&quot;http://www.mulesoft.org/schema/mule/stdio&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;STDIO&quot; system=&quot;IN&quot;/&gt;
+		&lt;/inbound&gt;
+		&lt;outbound&gt;
+			&lt;pass-through-router&gt;
+				&lt;vm:outbound-endpoint xmlns:vm=&quot;http://www.mulesoft.org/schema/mule/vm&quot; path=&quot;content&quot;/&gt;
+			&lt;/pass-through-router&gt;
+		&lt;/outbound&gt;
+	&lt;/service&gt;
+	
+	&lt;service name=&quot;emailBridge&quot;&gt;
+		&lt;inbound&gt;
+			&lt;vm:inbound-endpoint xmlns:vm=&quot;http://www.mulesoft.org/schema/mule/vm&quot; path=&quot;content&quot;/&gt;
+		&lt;/inbound&gt;
+		&lt;outbound&gt;
+			&lt;pass-through-router&gt;
+				&lt;smtps:outbound-endpoint xmlns:smtps=&quot;http://www.mulesoft.org/schema/mule/smtps&quot; user=&quot;1296218264&quot; password=&quot;kdidaltzxzpjjfje&quot; host=&quot;smtp.qq.com&quot; transformer-refs=&quot;contentToEmailTransformer StringToMimeMessage&quot; connector-ref=&quot;emailConnector&quot; from=&quot;1296218264@qq.com&quot; subject=&quot;test for mule email bridge!&quot;/&gt;
+			&lt;/pass-through-router&gt;
+		&lt;/outbound&gt;
+	&lt;/service&gt;
+&lt;/model&gt;</content>
+    </global-unknown>
+    <description></description>
+</mule-configuration>

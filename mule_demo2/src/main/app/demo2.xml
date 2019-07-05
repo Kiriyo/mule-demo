@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+<mule xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-
+	
     <flow name="demo2Flow1" doc:name="demo2Flow1">
         <http:inbound-endpoint exchange-pattern="request-response"    doc:name="HTTP" address="http://localhost:8888/hello"/>
         <cxf:jaxws-service serviceClass="com.mule.demo.webservice.HelloService" doc:name="SOAP"/>
+        <logger message=" befor process: #[message.payloadAs(java.lang.String)]" level="ERROR" doc:name="Logger"/>
+        <custom-transformer class="com.mule.demo.processor.ExtractParamProcessor" doc:name="Java"/>
+        <!-- <component class="com.mule.demo.processor.SoapClient" doc:name="Java"/> -->
+        <logger message="after process:#[payload]" level="ERROR" doc:name="Logger"/>
     </flow>
 
 	

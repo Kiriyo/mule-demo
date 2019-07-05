@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <ws:consumer-config name="Web_Service_Consumer" service="helloWorld" port="TestRegistryServiceImplPort" serviceAddress="http://localhost:8090/mavenProject/HelloWorld" wsdlLocation="http://localhost:8090/mavenProject/HelloWorld?wsdl" doc:name="Web Service Consumer"/>
+    <db:mysql-config name="MySQL_Configuration" host="127.0.0.1" port="3306" user="root" password="admin" database="test" doc:name="MySQL Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" basePath="/study" doc:name="HTTP Listener Configuration"/>
+    <flow name="webserviceFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/ws" doc:name="HTTP"/>
+        <ws:consumer config-ref="Web_Service_Consumer" operation="getUserList" doc:name="Web Service Consumer"/>
+        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+    </flow>
+    
+    
+    <flow name="webservicedelFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/ws2" doc:name="HTTP"/>
+        <custom-transformer class="com.studydemo.transformer.TransformerParam" doc:name="Java"/>
+        <logger level="INFO" doc:name="Logger" message="#[payload]"/>
+        <ws:consumer config-ref="Web_Service_Consumer" operation="delUser" doc:name="Web Service Consumer"/>
+        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+    </flow>
+    <!-- <flow name="webserviceFlow1">
+        <http:listener config-ref="HTTP_Listener_Configuration2" path="/ws2" doc:name="HTTP"/>
+        <custom-transformer class="com.studydemo.transformer.TransformerParam" doc:name="Java"/>
+        <ws:consumer config-ref="Web_Service_Consumer" operation="getUserById" doc:name="Web Service Consumer"/>
+        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+    </flow>
+    <flow name="webservice">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/ws3" doc:name="HTTP"/>
+        <set-session-variable variableName="user" value="#[payload]" doc:name="Session Variable"/>
+        <custom-transformer class="com.studydemo.transformer.TransformerParam" doc:name="Java"/>
+        <logger message="dddddddddddddddd===========#[payload]" level="INFO" doc:name="Logger"/>
+        <ws:consumer config-ref="Web_Service_Consumer" operation="addUser" doc:name="Web Service Consumer"/>
+        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+        <flow-ref name="webserviceSub_Flow" doc:name="webserviceSub_Flow"/>
+    </flow>
+    <sub-flow name="webserviceSub_Flow">
+    	<async doc:name="Async">
+            <db:select config-ref="MySQL_Configuration" doc:name="Database">
+                <db:dynamic-query><![CDATA[select *from t_user where pk_id=#[user.pkId]]]></db:dynamic-query>
+            </db:select>
+            <logger message="payload=========#[payload]" level="INFO" doc:name="Logger"/>
+        </async>
+    </sub-flow> -->
+</mule>

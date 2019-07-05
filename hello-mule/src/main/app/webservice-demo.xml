@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:email="http://www.mulesoft.org/schema/mule/email"  xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:jdbc="http://www.mulesoft.org/schema/mule/jdbc" xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio"
+	xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/jdbc http://www.mulesoft.org/schema/mule/jdbc/current/mule-jdbc.xsd
+http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/current/mule-stdio.xsd">
+<!-- <mule
+    xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
+	xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xml:object-to-xml-transformer name="Object_to_XML" doc:name="Object to XML"/> -->
+	<mulexml:object-to-xml-transformer name="Object_to_XML" doc:name="Object to XML"/>
+    <!-- 提供HTTP入口的数据更新服务  -->
+    <flow name="dataUpdateByHttpFlow" doc:name="dataUpdateByHttpFlow">
+		<http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="demo" doc:name="HTTP" 
+			responseTransformer-refs="Object_to_XML"/>     
+		<flow-ref name="insertData" doc:name="Flow Reference"/>
+    </flow>
+    
+    <!-- 通过数据抽取服务获取数据  -->
+    <flow name="GetDataFlow" doc:name="GetDataFlow">
+        <set-payload value="mule" doc:name="Parameters"/>
+        <http:outbound-endpoint  address="computerA" responseTimeout="100000" doc:name="HTTP endpoint">
+		<!-- 可以根据wsdl进行相应的配置 -->
+		<cxf:jaxws-client operation="" clientClass="" port="" doc:name="SOAP"/>
+        </http:outbound-endpoint>
+       <byte-array-to-object-transformer doc:name="Byte Array to Object"/>  
+        <vm:outbound-endpoint exchange-pattern="one-way" doc:name="VM" path="datas"/> 
+    </flow>
+    
+    <!-- 通过数据插入服务添加数据  -->
+    <flow name="insertData" doc:name="insertData">
+        <vm:inbound-endpoint exchange-pattern="one-way" path="datas" doc:name="VM"/>
+        <!-- <custom-transformer class="yourTransformer" doc:name="Java"/> -->
+        <transformer ref="HttpDataToUserTransformer" doc:name="HttpDataToUserTransformer"/>
+		<!-- 可以根据wsdl进行相应的配置 -->
+        <!-- <cxf:jaxws-client operation="getUserName" clientClass="" port="" doc:name="SOAP"/> -->
+        <cxf:jaxws-client operation="getUserName" xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" clientClass="com.mule.webservice.HelloServiceClient" port="appServicePort" doc:name="SOAP"/>
+        <!-- <http:outbound-endpoint address="computerB" responseTimeout="100000" doc:name="HTTP endpoint"/> -->
+    </flow>
+</mule>

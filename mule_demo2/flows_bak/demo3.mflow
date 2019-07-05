@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="demo3">
+    <global-element name="Bean" type="http://www.springframework.org/schema/beans/bean" entity-id="Bean#1">
+        <properties>
+            <property name="factory-bean"/>
+            <property name="abstract"/>
+            <property name="scope"/>
+            <property name="init-method"/>
+            <property name="autowire-candidate"/>
+            <property name="factory-method"/>
+            <property name="class" value="org.apache.activemq.ActiveMQConnectionFactory"/>
+            <property name="parent"/>
+            <property name="children"/>
+            <property name="lazy-init"/>
+            <property name="id" value="activeMqConnFactory"/>
+            <property name="name"/>
+            <property name="primary"/>
+            <property name="autowire"/>
+            <property name="destroy-method"/>
+            <property name="auxiliary;index" value="1"/>
+            <property name="depends-on"/>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;0">
+                <property name="name" value="brokerURL"/>
+                <property name="value" value="tcp://127.0.0.1:61616"/>
+                <property name="auxiliary;index" value="2"/>
+                <property name="auxiliary;wrapIn" value="2"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;1">
+                <property name="name" value="userName"/>
+                <property name="value" value="HIP"/>
+                <property name="auxiliary;index" value="3"/>
+                <property name="auxiliary;wrapIn" value="3"/>
+            </property-collection>
+            <property-collection name="@http://www.springframework.org/schema/beans/property;2">
+                <property name="name" value="password"/>
+                <property name="value" value="123456"/>
+                <property name="auxiliary;index" value="4"/>
+                <property name="auxiliary;wrapIn" value="4"/>
+            </property-collection>
+        </properties>
+    </global-element>
+    <global-element name="Active MQ" type="org.mule.tooling.ui.modules.core.global.activemq.config" entity-id="Active MQ#1">
+        <properties>
+            <property name="jndiProviderUrl"/>
+            <property name="embeddedMode"/>
+            <property name="redeliveryHandlerFactory-ref"/>
+            <property name="connectionFactory-ref" value="activeMqConnFactory"/>
+            <property name="maxRedelivery"/>
+            <property name="durable"/>
+            <property name="password"/>
+            <property name="username"/>
+            <property name="name" value="jmsConnector"/>
+            <property name="dynamicNotification"/>
+            <property name="noLocal"/>
+            <property name="auxiliary;index" value="5"/>
+            <property name="eagerConsumer"/>
+            <property name="numberOfConsumers"/>
+            <property name="acknowledgementMode"/>
+            <property name="jndiInitialFactory"/>
+            <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/jms/activemq-connector"/>
+            <property name="validateConnections"/>
+            <property name="disableTemporaryReplyToDestinations"/>
+            <property name="clientId"/>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="persistentDelivery"/>
+            <property name="forceJndiDestinations"/>
+            <property name="connectionFactoryJndiName"/>
+            <property name="brokerURL" value="vm://localhost"/>
+            <property name="specification" value="1.1"/>
+            <property name="jndiDestinations"/>
+            <property name="honorQosHeaders"/>
+            <property name="cacheJmsSessions"/>
+            <property name="jndiProviderProperties-ref"/>
+        </properties>
+    </global-element>
+    <global-element name="STDIO" type="http://www.mulesoft.org/schema/mule/stdio/connector" entity-id="STDIO#1">
+        <properties>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="messageDelayTime"/>
+            <property name="promptMessage" value="Please enter messageï¼?"/>
+            <property name="outputMessageCode"/>
+            <property name="name" value="stdioConnector"/>
+            <property name="resourceBundle"/>
+            <property name="validateConnections"/>
+            <property name="dynamicNotification"/>
+            <property name="outputMessage"/>
+            <property name="promptMessageCode"/>
+            <property name="auxiliary;index" value="6"/>
+        </properties>
+    </global-element>
+    <global-unknown description="false" unknownName="jmsServer" index="7" entity-id="global-unknown#1">
+        <content>&lt;model xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; name=&quot;jmsServer&quot;&gt;
+		&lt;service name=&quot;jmsServrsService&quot;&gt;
+			&lt;inbound&gt;
+				&lt;stdio:inbound-endpoint xmlns:stdio=&quot;http://www.mulesoft.org/schema/mule/stdio&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;STDIO&quot; system=&quot;IN&quot;/&gt;
+			&lt;/inbound&gt;
+			&lt;outbound&gt;
+				&lt;pass-through-router&gt;
+					&lt;jms:outbound-endpoint xmlns:jms=&quot;http://www.mulesoft.org/schema/mule/jms&quot; connector-ref=&quot;jmsConnector&quot; queue=&quot;mule.queue.test&quot;/&gt;
+				&lt;/pass-through-router&gt;
+			&lt;/outbound&gt;
+		&lt;/service&gt;
+	&lt;/model&gt;</content>
+    </global-unknown>
+    <global-unknown description="false" unknownName="jmsClients" index="14" entity-id="global-unknown#2">
+        <content>&lt;model xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot; name=&quot;jmsClients&quot;&gt;
+		&lt;service name=&quot;jmsClientServices&quot;&gt;
+			&lt;inbound&gt;
+				&lt;jms:inbound-endpoint xmlns:jms=&quot;http://www.mulesoft.org/schema/mule/jms&quot; connector-ref=&quot;jmsConnector&quot; queue=&quot;mule.queue.test&quot;&gt;
+					&lt;jms:jmsmessage-to-object-transformer/&gt;
+				&lt;/jms:inbound-endpoint&gt;
+			&lt;/inbound&gt;
+			&lt;outbound&gt;
+				&lt;pass-through-router&gt;
+					&lt;stdio:outbound-endpoint xmlns:stdio=&quot;http://www.mulesoft.org/schema/mule/stdio&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;STDIO2&quot; system=&quot;OUT&quot;/&gt;
+				&lt;/pass-through-router&gt;
+			&lt;/outbound&gt;
+		&lt;/service&gt;
+	&lt;/model&gt;</content>
+    </global-unknown>
+    <description></description>
+</mule-configuration>

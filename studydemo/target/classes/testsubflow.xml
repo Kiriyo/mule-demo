@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <db:mysql-config name="MySQL_Configuration1" host="127.0.0.1" port="3306" user="root" password="admin" database="test" doc:name="MySQL Configuration"/>
+    <flow name="testsubflowFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/subFlow" doc:name="HTTP"/>
+        <logger message="main flow================" level="INFO" doc:name="Logger"/>
+        <flow-ref name="subFlow" doc:name="refSubFlow"/>
+    </flow>
+    <sub-flow name="subFlow">
+    	<logger message="sub flow================" level="INFO" doc:name="Logger"/>
+        <db:insert config-ref="MySQL_Configuration1" doc:name="Database">
+            <db:parameterized-query><![CDATA[insert into t_user (pk_id,u_id,login_name,password,name,email,phone,status)
+values("3","1","yajie","123455","dengyajie","592763600","123457880","1")]]></db:parameterized-query>
+        </db:insert>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+    </sub-flow>
+</mule>

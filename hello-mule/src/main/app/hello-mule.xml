@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <custom-transformer class="com.mule.transformer.HttpDataToUserTransformer" name="HttpDataToUserTransformer" doc:name="Java"/>
+    <custom-transformer class="com.mule.transformer.StringToHtmlTransformer" name="StringToHtmlTransformer" doc:name="Java"/>
+    <message-properties-transformer overwrite="true" name="setHtmlContenType" doc:name="Message Properties">
+        <add-message-property key="Content-Type" value="text/html"/>
+        <delete-message-property key="content-type"/>
+    </message-properties-transformer>
+    <flow name="hello" doc:name="hello">
+        <inbound-endpoint exchange-pattern="request-response" address="http://localhost:9090/hello-mule" doc:name="SayHello"/>
+        <transformer ref="HttpDataToUserTransformer" doc:name="HttpDataToUserTransformer"/>
+        <response>
+            <transformer ref="StringToHtmlTransformer" doc:name="StringToHemlTransformer"/>
+            <transformer ref="setHtmlContenType" doc:name="setHtmlContenType"/>
+        </response>
+        <component class="com.mule.transformer.service.HelloService" doc:name="HelloService"/>
+    </flow>
+</mule>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:smtps="http://www.mulesoft.org/schema/mule/smtps" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:stdio="http://www.mulesoft.org/schema/mule/stdio" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/smtps http://www.mulesoft.org/schema/mule/smtps/current/mule-smtps.xsd http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd http://www.mulesoft.org/schema/mule/stdio http://www.mulesoft.org/schema/mule/stdio/current/mule-stdio.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+<!-- 实现命令行输入发送email -->
+<!-- 为了能在命令行接受输入， 需要配置一个输入输出连接器  -->
+<stdio:connector name="SystemSteamConnecter" promptMessage="Please enter email content(content,address)!" messageDelayTime="1000" doc:name="STDIO" />
+<custom-connector name="emailConnector" class="com.mule.email.SmtpConnector"></custom-connector>
+<custom-transformer class="com.mule.transformer.ContentToEmailTransformer" name="contentToEmailTransformer" />
+<custom-transformer name="StringToMimeMessage" class="org.mule.transport.email.transformers.StringToEmailMessage" />   
+
+
+<model>
+	<service name="emailContentUMO">
+		<inbound>
+			<stdio:inbound-endpoint doc:name="STDIO" system="IN"/>
+		</inbound>
+		<outbound>
+			<pass-through-router>
+				<vm:outbound-endpoint path="content"/>
+			</pass-through-router>
+		</outbound>
+	</service>
+	
+	<service name="emailBridge">
+		<inbound>
+			<vm:inbound-endpoint path="content"/>
+		</inbound>
+		<outbound>
+			<pass-through-router>
+				<smtps:outbound-endpoint user="1296218264" password="kdidaltzxzpjjfje" host="smtp.qq.com" transformer-refs="contentToEmailTransformer StringToMimeMessage" connector-ref="emailConnector" from="1296218264@qq.com" subject="test for mule email bridge!"/>
+			</pass-through-router>
+		</outbound>
+	</service>
+</model>
+
+
+
+</mule>

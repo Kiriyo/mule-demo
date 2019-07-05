@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="testsubflow">
+    <global-unknown description="false" unknownName="MySQL_Configuration1" index="1" entity-id="global-unknown#1">
+        <content>&lt;db:mysql-config xmlns:db=&quot;http://www.mulesoft.org/schema/mule/db&quot; name=&quot;MySQL_Configuration1&quot; host=&quot;127.0.0.1&quot; port=&quot;3306&quot; user=&quot;root&quot; password=&quot;admin&quot; database=&quot;test&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;MySQL Configuration&quot;/&gt;</content>
+    </global-unknown>
+    <flow SubFlow="false" name="testsubflowFlow" entity-id="d2cbd3ce-22df-4a4d-ac7a-162f4e3fba70">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="2"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <unknown description="false" index="3" entity-id="unknown#1">
+                <content>&lt;http:listener xmlns:http=&quot;http://www.mulesoft.org/schema/mule/http&quot; config-ref=&quot;HTTP_Listener_Configuration&quot; path=&quot;/subFlow&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;HTTP&quot;/&gt;</content>
+            </unknown>
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+                <properties>
+                    <property name="message" value="main flow================"/>
+                    <property name="level" value="INFO"/>
+                    <property name="category"/>
+                    <property name="auxiliary;index" value="4"/>
+                </properties>
+            </pattern>
+            <pattern name="refSubFlow" type="http://www.mulesoft.org/schema/mule/core/flow-ref" entity-id="Flow Reference#1">
+                <properties>
+                    <property name="name" value="subFlow"/>
+                    <property name="auxiliary;index" value="5"/>
+                </properties>
+            </pattern>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+    <flow SubFlow="true" name="subFlow" entity-id="edc51e0e-34a3-45d2-87d7-116ac9a3c259">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="6"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+            <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#2">
+                <properties>
+                    <property name="message" value="sub flow================"/>
+                    <property name="level" value="INFO"/>
+                    <property name="category"/>
+                    <property name="auxiliary;index" value="7"/>
+                </properties>
+            </pattern>
+            <unknown description="false" index="8" entity-id="unknown#2">
+                <content>&lt;db:insert xmlns:db=&quot;http://www.mulesoft.org/schema/mule/db&quot; config-ref=&quot;MySQL_Configuration1&quot; xmlns:doc=&quot;http://www.mulesoft.org/schema/mule/documentation&quot; doc:name=&quot;Database&quot;&gt;
+            &lt;db:parameterized-query&gt;&lt;![CDATA[insert into t_user (pk_id,u_id,login_name,password,name,email,phone,status)
+values(&quot;3&quot;,&quot;1&quot;,&quot;yajie&quot;,&quot;123455&quot;,&quot;dengyajie&quot;,&quot;592763600&quot;,&quot;123457880&quot;,&quot;1&quot;)]]&gt;&lt;/db:parameterized-query&gt;
+        &lt;/db:insert&gt;</content>
+            </unknown>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#1">
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="mimeType"/>
+                    <property name="auxiliary;index" value="10"/>
+                </properties>
+            </pattern>
+            <pattern name="Set Payload" type="http://www.mulesoft.org/schema/mule/core/set-payload" entity-id="Set Payload#1">
+                <properties>
+                    <property name="value" value="#[payload]"/>
+                    <property name="auxiliary;index" value="11"/>
+                </properties>
+            </pattern>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+</mule-configuration>
